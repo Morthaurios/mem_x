@@ -52,6 +52,14 @@ static Platform_Return_t SelectAddress(const uint16_t u16Address);
 /*****************************************************************************************************************************
  * FUNCTION DEFINITIONS
  *****************************************************************************************************************************/
+
+/*****************************************************************************************************************************
+ * FUNCTION:        Mem_Init
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 Platform_Return_t Mem_Init(void)
 {
     /* Set some registers. */
@@ -61,6 +69,13 @@ Platform_Return_t Mem_Init(void)
     return E_OK;
 }
 
+/*****************************************************************************************************************************
+ * FUNCTION:        Mem_Write
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 Platform_Return_t Mem_Write(const uint16_t u16Address, const uint8_t * const pu8Buffer, const uint16_t u16BufferLength)
 {
     Platform_Return_t eRetVal = E_NOT_OK;
@@ -86,6 +101,13 @@ Platform_Return_t Mem_Write(const uint16_t u16Address, const uint8_t * const pu8
     return eRetVal;
 }
 
+/*****************************************************************************************************************************
+ * FUNCTION:        Mem_Read
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 Platform_Return_t Mem_Read(const uint16_t u16Address, uint8_t * const pu8Buffer, const uint16_t u16BufferLength)
 {
     Platform_Return_t eRetVal = E_NOT_OK;
@@ -104,6 +126,13 @@ Platform_Return_t Mem_Read(const uint16_t u16Address, uint8_t * const pu8Buffer,
     return eRetVal;
 }
 
+/*****************************************************************************************************************************
+ * FUNCTION:        WriteEnable
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 static Platform_Return_t WriteEnable(void)
 {
     uint8_t u8Command = (uint8_t) E_WRITE_ENABLE;
@@ -111,6 +140,13 @@ static Platform_Return_t WriteEnable(void)
     return I2C_Transmit(MEM_I2C_ADDRESS, &u8Command, 1U);
 }
 
+/*****************************************************************************************************************************
+ * FUNCTION:        WritePage
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 static Platform_Return_t WritePage(const uint16_t u16Address, const uint8_t * const pu8Buffer)
 {
     uint8_t au8WriteBuffer[259];
@@ -128,6 +164,13 @@ static Platform_Return_t WritePage(const uint16_t u16Address, const uint8_t * co
     return I2C_Transmit(MEM_I2C_ADDRESS, au8WriteBuffer, (uint16_t) sizeof(au8WriteBuffer));
 }
 
+/*****************************************************************************************************************************
+ * FUNCTION:        SelectAddress
+ * DESCRIPTION:     TBD
+ * INPUT:           TBD
+ * OUTPUT:          TBD
+ * RETURN:          TBD
+ *****************************************************************************************************************************/
 static Platform_Return_t SelectAddress(const uint16_t u16Address)
 {
     uint8_t au8Command[3];
