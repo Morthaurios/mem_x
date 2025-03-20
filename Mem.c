@@ -18,6 +18,13 @@
 
 #define MEM_I2C_ADDRESS (0x20U)
 
+#define MEM_PAGE_SIZE   (256U)
+
+#define MEM_WRITE_COMMAND_OVERHEAD_SIZE (3U)
+#define MEM_WRITE_COMMAND_SIZE          (MEM_PAGE_SIZE + MEM_WRITE_COMMAND_OVERHEAD_SIZE)
+
+#define MEM_WRITE_ENABLE_COMMAND_SIZE   (1U)
+
 /*****************************************************************************************************************************
  * TYPE DEFINITIONS
  *****************************************************************************************************************************/
@@ -81,6 +88,7 @@ Platform_Return_t Mem_Write(const uint16_t u16Address, const uint8_t * const pu8
     Platform_Return_t eRetVal = E_NOT_OK;
     uint8_t u8NumberOfPages;
     uint8_t u8Counter;
+    uint16_t u16BufferIndex;
 
     if( (NULL == pu8Buffer) && (u16BufferLength > 0U) &&((u16BufferLength & 0x00FFU) == 0U))
     {
@@ -92,7 +100,9 @@ Platform_Return_t Mem_Write(const uint16_t u16Address, const uint8_t * const pu8
             {
                 if(E_OK == WriteEnable())
                 {
-                    eRetVal = WritePage(u16Address, pu8Buffer);
+                    u16BufferIndex = ((uint16_t) u8Counter) << 8;
+
+                    eRetVal = WritePage(u16Address, &pu8Buffer[u16BufferIndex]);
                 }
             }
         }
@@ -137,7 +147,7 @@ static Platform_Return_t WriteEnable(void)
 {
     uint8_t u8Command = (uint8_t) E_WRITE_ENABLE;
 
-    return I2C_Transmit(MEM_I2C_ADDRESS, &u8Command, 1U);
+    return I2C_Transmit(MEM_I2C_ADDRESS, &u8Command, MEM_WRITE_ENABLE_COMMAND_SIZE);
 }
 
 /*****************************************************************************************************************************
@@ -149,16 +159,16 @@ static Platform_Return_t WriteEnable(void)
  *****************************************************************************************************************************/
 static Platform_Return_t WritePage(const uint16_t u16Address, const uint8_t * const pu8Buffer)
 {
-    uint8_t au8WriteBuffer[259];
+    uint8_t au8WriteBuffer[MEM_WRITE_COMMAND_SIZE];
     uint16_t u16Index;
 
     au8WriteBuffer[0] = (uint8_t) E_WRITE;
     au8WriteBuffer[1] = (uint8_t) ((u16Address & 0xFF00U) >> 8);
     au8WriteBuffer[2] = (uint8_t) (u16Address & 0x00FFU);
 
-    for(u16Index = 0U; u16Index < 256U; u16Index++)
+    for(u16Index = 0U; u16Index < MEM_PAGE_SIZE; u16Index++)
     {
-        au8WriteBuffer[3U + u16Index] = pu8Buffer[u16Index];
+        au8WriteBuffer[MEM_WRITE_COMMAND_OVERHEAD_SIZE + u16Index] = pu8Buffer[u16Index];
     }
 
     return I2C_Transmit(MEM_I2C_ADDRESS, au8WriteBuffer, (uint16_t) sizeof(au8WriteBuffer));
